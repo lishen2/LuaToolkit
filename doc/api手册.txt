@@ -1,0 +1,104 @@
+==========================================
+=日志
+==========================================
+log.init()
+打开日志文件
+无返回值
+
+log.print(message)
+同时将参数输出到控制台和文件，签名添加时间戳
+无返回值
+
+log.print_hex(data, len)
+打印二进制内容到控制台和文件。打印的格式是：
+offset hex ascii
+
+log.print_hex_line(data, len)
+直接打印二进制内容不带换行和格式化
+
+==========================================
+=时间戳
+==========================================
+ts.get_ts()
+获取计算器启动到现在的毫秒数
+返回毫秒数
+
+ts.reset_interval()
+重置间隔时间戳
+无返回值
+
+ts.get_interval()
+获取上次reset到现在的毫秒数
+返回间隔(毫秒)
+
+==========================================
+=定时器
+==========================================
+timer.set_timer(interval, callback)
+设置延时和回调函数，回调函数会在指定的时间被调用
+成功返回0，失败返回1
+
+timer.clear_timer(timerid)
+
+==========================================
+=串口
+==========================================
+serial.open(port, baud, data, stop, parity)
+打开串口。
+port串口名称，字符串“COM1”等...
+baud波特率，数字 115200 等
+data数据位，数字 4 - 8
+stop停止位，数字 1, 1,5, 2 
+parity校验位，字符串“none”，“odd”，“even”，“mark”，“space”
+成功返回0，失败返回1
+
+serial.close()
+关闭串口
+
+serial.reads(length, timeout)
+读取串口
+length：读取的长度
+timeout：超时时间
+返回值1：读取到的数据
+返回值2：读取到的长度
+
+serial.writes(data, length)
+data：字符串类型，要发送的数据
+length：发送数据的长度
+返回值：成功发送数据的长度
+
+serial.purge()
+丢弃缓冲区中的所有数据
+无返回值
+
+==========================================
+=算法
+==========================================
+alg.crc16(data, length)
+计算CRC16校验
+
+==========================================
+=网络
+==========================================
+net.create_client({ip_addr = "127.0.0.1", port = 9000, family= "ipv4"})
+返回conn对象
+
+net.create_server({ip_addr = "any", port = 8000, family= "ipv4" })
+返回server对象
+
+net.create_udp({ip_addr = "any", port = 3000, family = "ipv4"})
+
+server.on(server, "connect", function(conn)  end)
+server.close(server)
+
+conn.on(conn, 'connect', function() end)
+conn.on(conn, 'disconnect', function() end)
+conn.on(conn, 'data', function(, data, datalen) end)
+conn.send(conn, data, len)
+conn.close(conn)
+
+udpsock.sendto(udpsock, ip_addr, port, data, len)
+udpsock.on(udpsock, 'data', function(ip_addr, port, data, len) end)
+udpsock.close(udpsock)
+
+

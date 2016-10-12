@@ -36,6 +36,9 @@
     <ClCompile Include="src\plugin\lua_net.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\plugin\lua_buf.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\common.h">

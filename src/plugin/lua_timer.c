@@ -42,17 +42,35 @@ static int _setTimer(lua_State *L)
 		}
 		g_timers[i].ts = GetTickCount() + interval;
 		g_timers[i].ridx = luaL_ref(L, LUA_REGISTRYINDEX);
-        //TODO, luaL_ref会把参数出栈，这样无法返回正确的数据
-		lua_pushnumber(L, 0);
+        lua_pushinteger(L, i);
 	} else {
-		lua_pushnumber(L, 1);
+		lua_pushinteger(L, -1);
 	}
 
 	return 1;
 }
 
+static int _clearTimer(lua_State *L)
+{
+	int timerid;
+
+	//保证栈上有一个空闲位置
+	luaL_checkstack(L, 1, "LUA Stack OverFlow");
+
+	//检查参数
+	timerid = (int)luaL_checkinteger(L, -1);
+
+    if (timerid >= 0 && timerid < TIMER_MAX_NUM){
+        luaL_unref(L, LUA_REGISTRYINDEX, g_timers[timerid].ridx);
+        g_timers[timerid].ts = 0;
+    }
+
+	return 0;
+}
+
 static const struct luaL_Reg g_timerlib [] = {
 	{"set_timer", _setTimer},
+    {"clear_timer", _clearTimer},
 	{NULL, NULL}
 };
 
@@ -69,6 +87,7 @@ int TIMER_Poll(lua_State *L)
 {
 	int i;
 	int ret;
+    int status;
 
 	ret = BOOL_FALSE;
 	for (i = 0; i < TIMER_MAX_NUM; ++i){
@@ -82,7 +101,10 @@ int TIMER_Poll(lua_State *L)
 			g_timers[i].ts = 0;
 
 			//执行回调函数
-    		lua_pcall(L, 0, 0, 0);
+    		status = lua_pcall(L, 0, 0, 0);
+            if (LUA_OK != status){
+                printf("Error: %s", lua_tostring(L, -1));
+            }
 			ret = BOOL_TRUE;
 		}
 	}

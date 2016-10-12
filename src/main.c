@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include <stdio.h>
 #include "common.h"
 #include "lua.h"
@@ -90,6 +91,18 @@ int main(int argc, char* argv[])
 		printf("Error regist NET\n");
 		return -1;
 	}
+
+	ret = BUF_Regist(L);
+	if (ERR_OK != ret){
+		printf("Error regist BUF\n");
+		return -1;	
+	}
+
+	ret = TS_Regist(L);
+	if (ERR_OK != ret){
+		printf("Error regist TS");
+		return -1;
+	}
 	
 	//load script file
 	if (argc < 2){
@@ -103,6 +116,7 @@ int main(int argc, char* argv[])
 	while(1){
 		ret = TIMER_Poll(L);
 		NET_Poll(L);
+		Sleep(10);
 	}
 
 	//close lua env

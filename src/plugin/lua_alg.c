@@ -119,7 +119,7 @@ static int _calcCRC16(lua_State *L)
 	len = (unsigned int)luaL_checkinteger(L, -1);
 
 	res = AlgCRC16(data, len);
-	lua_pushnumber(L, res);
+	lua_pushinteger(L, res);
 	
 	return 1;
 }

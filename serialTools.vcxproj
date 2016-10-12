@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\plugin\lua_alg.c" />
+    <ClCompile Include="src\plugin\lua_buf.c" />
     <ClCompile Include="src\plugin\lua_log.c" />
     <ClCompile Include="src\plugin\lua_serial.c" />
     <ClCompile Include="src\plugin\lua_net.c" />
@@ -88,7 +89,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>E:\projects\test\serialcollect\serialcollect\serialTools\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>lua_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua_lib.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -133,20 +133,20 @@ static int _openPort(lua_State *L)
 					0, //同步方式  
 					NULL);  
 	if(SERIAL_INVALID_PORT_HANDLE == hCom){ 
-		lua_pushnumber (L, -1);
+		lua_pushinteger (L, -1);
 		return 1;
 	}
 	
 	ret = _setupPort(hCom, baud, data, stop, parity);
 	if (ERR_OK != ret){
 		CloseHandle(g_portHandle);
-		lua_pushnumber (L, -1);
+		lua_pushinteger (L, -1);
 		return 1;
 	}
 
 	g_portHandle = hCom;
 
-	lua_pushnumber (L, 0);
+	lua_pushinteger (L, 0);
 	return 1;
 }
 
@@ -180,7 +180,7 @@ static int _reads(lua_State *L)
 	//检查句柄
 	if (SERIAL_INVALID_PORT_HANDLE == g_portHandle){
 		lua_pushnil(L);
-		lua_pushnumber(L, 0);	
+		lua_pushinteger(L, 0);	
 		return 2;
 	}
 
@@ -204,10 +204,10 @@ static int _reads(lua_State *L)
 
 	if (offset > 0){
 		lua_pushlstring(L, buf, offset);
-		lua_pushnumber(L, offset);
+		lua_pushinteger(L, offset);
 	} else {
 		lua_pushnil(L);
-		lua_pushnumber(L, 0);	
+		lua_pushinteger(L, 0);	
 	}
 
 	return 2;
@@ -231,7 +231,7 @@ static int _writes(lua_State *L)
 
 	//检查句柄
 	if (SERIAL_INVALID_PORT_HANDLE == g_portHandle){
-		lua_pushnumber(L, 0);	
+		lua_pushinteger(L, 0);	
 		return 1;
 	}
 
@@ -249,7 +249,7 @@ static int _writes(lua_State *L)
         }
 	}
 
-	lua_pushnumber(L, offset);
+	lua_pushinteger(L, offset);
 
 	return 1;
 }

@@ -766,6 +766,7 @@ static void _serverPoll(lua_State *L, struct NET_Server* srv)
     int addrlen;
     int fd;
     int lasterror;
+    int status;
     
     //判正在监听
     if (NET_SERVER_LISTENING == srv->state){
@@ -798,7 +799,10 @@ static void _serverPoll(lua_State *L, struct NET_Server* srv)
                 memcpy(&(conn->addr6), &addr6, sizeof(addr6));
                 memcpy(&(conn->addr), &addr, sizeof(addr));
                 list_add_tail(&(conn->node), &g_conns);
-                lua_pcall(L, 1, 0, 0);
+                status = lua_pcall(L, 1, 0, 0);
+                if (LUA_OK != status){
+                    printf("Error: %s", lua_tostring(L, -1));
+                }
             }
         } 
         //错误处理
@@ -834,6 +838,7 @@ static void _connPoll(lua_State *L, struct NET_Conn* conn)
     char buf[8192];    
     int ret;
     int lasterror;
+    int status;
 
     //正在连接
     if (NET_CONN_CONNECTING == conn->state){
@@ -845,7 +850,10 @@ static void _connPoll(lua_State *L, struct NET_Conn* conn)
             //回调lua
             if (-1 != conn->onConnect){
                 lua_rawgeti(L, LUA_REGISTRYINDEX, conn->onConnect);
-                lua_pcall(L, 0, 0, 0);
+                status = lua_pcall(L, 0, 0, 0);
+                if (LUA_OK != status){
+                    printf("Error: %s", lua_tostring(L, -1));
+                }
             }
         } 
         //正在连接
@@ -869,7 +877,10 @@ static void _connPoll(lua_State *L, struct NET_Conn* conn)
                 lua_rawgeti(L, LUA_REGISTRYINDEX, conn->onData);
                 lua_pushlstring(L, buf, ret);
                 lua_pushinteger(L, ret);
-                lua_pcall(L, 2, 0, 0);
+                status = lua_pcall(L, 2, 0, 0);
+                if (LUA_OK != status){
+                    printf("Error: %s", lua_tostring(L, -1));
+                }
             }                
         }
         //出错进入错误流程
@@ -884,7 +895,10 @@ static void _connPoll(lua_State *L, struct NET_Conn* conn)
         //回调lua
         if (-1 != conn->onClose){
             lua_rawgeti(L, LUA_REGISTRYINDEX, conn->onClose);
-            lua_pcall(L, 0, 0, 0);
+            status = lua_pcall(L, 0, 0, 0);
+            if (LUA_OK != status){
+                printf("Error: %s", lua_tostring(L, -1));
+            }
         }
         //关闭socket
         if (-1 != conn->fd){
@@ -907,6 +921,7 @@ static void _udpPoll(lua_State *L, struct NET_Udp* udp)
     int lasterror;
     int addrlen;
     uint16_t port;
+    int status;
 
     if (NET_UDP_READY == udp->state){
         //判断是否收到数据
@@ -934,7 +949,10 @@ static void _udpPoll(lua_State *L, struct NET_Udp* udp)
                 lua_pushinteger(L, port);
                 lua_pushlstring(L, buf, ret);
                 lua_pushinteger(L, ret);
-                lua_pcall(L, 4, 0, 0);
+                status = lua_pcall(L, 4, 0, 0);
+                if (LUA_OK != status){
+                    printf("Error: %s", lua_tostring(L, -1));
+                }
             }
         }
         //出错进入错误流程

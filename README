@@ -1,2 +1,6 @@
-lua toolset used to complete small work tasks commonly used in message handling and the like.
-lua工具集，用于完成工作中常用的消息处理之类的小任务。
+lua toolset used to handle simple daily tasks. API mode is inspired by NODEJS, support log, net(IPv6&IPv6), timestamp, timer and serial.
+
+
+lua工具集，用于完成日常工作中的小任务。
+API模仿NODEJS的形式，目前支持日志、网络（同时支持IPv4和IPv6）、时间戳、定时器和串口功能。
+

@@ -975,7 +975,6 @@ static void _udpPoll(lua_State *L, struct NET_Udp* udp)
     return;
 }
 
-
 int NET_Poll(lua_State *L)
 {
     struct list_head *head;

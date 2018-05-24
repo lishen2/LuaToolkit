@@ -14,6 +14,7 @@
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\plugin\lua_alg.c" />
     <ClCompile Include="src\plugin\lua_buf.c" />
+    <ClCompile Include="src\plugin\lua_can.c" />
     <ClCompile Include="src\plugin\lua_log.c" />
     <ClCompile Include="src\plugin\lua_serial.c" />
     <ClCompile Include="src\plugin\lua_net.c" />
@@ -65,14 +66,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>inc;inc\lua;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>inc;inc\lua;inc\pcan;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>lua_lib_debug.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua53.lib;Ws2_32.lib;PCANBasic.lib;PCAN-ISO-TP.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

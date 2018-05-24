@@ -8,8 +8,10 @@
 #include "plugin\lua_serial.h"
 #include "plugin\lua_alg.h"
 #include "plugin\lua_ts.h"
+#include "plugin\lua_buf.h"
 #include "plugin\lua_timer.h"
 #include "plugin\lua_net.h"
+#include "plugin\lua_can.h"
 
 static lua_State * _creaetLuaEnv(void)
 {
@@ -101,6 +103,12 @@ int main(int argc, char* argv[])
 	ret = TS_Regist(L);
 	if (ERR_OK != ret){
 		printf("Error regist TS");
+		return -1;
+	}
+
+	ret = CAN_Regist(L);
+	if (ERR_OK != ret) {
+		printf("Error regist CAN");
 		return -1;
 	}
 	

@@ -62,12 +62,12 @@ static int _openPort(lua_State *L)
 	char buf[32];
 	int ret;
 	HANDLE hCom;  //全局变量，串口句柄
-	char *port;
+	const char *port;
 	DWORD  baud;
 	BYTE  data;
 	lua_Number lstop;
 	BYTE stop;
-	char *lparity;
+	const char *lparity;
 	BYTE parity;
 
 	//检查栈空间
@@ -215,7 +215,7 @@ static int _reads(lua_State *L)
 
 static int _writes(lua_State *L)
 {
-	unsigned char *data;
+	const unsigned char *data;
 	BOOL ret;
 	DWORD wCount;
 	int length;
@@ -226,7 +226,7 @@ static int _writes(lua_State *L)
 	luaL_checkstack(L, 1, "LUA Stack OverFlow");
 
 	//获取参数
-	data = (unsigned int)luaL_checkinteger(L, -2);
+	data = luaL_checkstring(L, -2);
 	length = (unsigned int)luaL_checkinteger(L, -1);
 
 	//检查句柄

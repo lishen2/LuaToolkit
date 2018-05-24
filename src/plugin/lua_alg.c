@@ -87,7 +87,7 @@ uint16_t const CRC_Tab[] =  {
 	0x02e93,0x03eb2,0x00ed1,0x01ef0
 };						   
 							   
-unsigned short AlgCRC16(unsigned char *str, int size)
+unsigned short AlgCRC16(const unsigned char *str, uint32_t size)
 {          
     uint32_t     i;
     INT_16_08	 crc;
@@ -107,7 +107,7 @@ unsigned short AlgCRC16(unsigned char *str, int size)
 
 static int _calcCRC16(lua_State *L)
 {
-	unsigned char *data;
+	const unsigned char *data;
 	unsigned short res;
 	int len;
 

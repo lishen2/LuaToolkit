@@ -87,6 +87,14 @@ buf.random(length)
 buf.memcmp(string1, string2)
 比较两个缓冲区，完全相等返回0，其他返回1
 
+buf.str2bin(string)
+将16进制字符串转化为二进制数据
+返回二进制数据和长度
+
+str = buf.bin2str(bin_str, len)
+将二进制数据转化为16进制字符串
+返回字符串
+
 ==========================================
 =网络
 ==========================================
@@ -110,5 +118,33 @@ conn.close(conn)
 udpsock.sendto(udpsock, ip_addr, port, data, len)
 udpsock.on(udpsock, 'data', function(ip_addr, port, data, len) end)
 udpsock.close(udpsock)
+
+==========================================
+=CAN
+==========================================
+can.open(baudrate, testerID, ECUID, FuncID)
+初始化USB总线上的第一个PCAN设备
+成功返回0，失败返回-1
+
+can.close()
+关闭PCAN设备
+
+can.sendRaw(id, data, len)
+发送原始CAN报文，data不超过8字节
+成功返回0，失败返回-1
+
+can.recvRaw(timeout)
+接收原始CAN报文，超时时间单位为毫秒
+成功返回CAN消息和长度
+失败返回nil和0
+
+can.sendIsotp(data, len)
+发送ISOTP报文，data长度不超过4095
+成功返回0，失败返回-1
+
+can.recvIsotp(tineout)
+接收ISOTP报文，超时时间单位为毫秒
+成功返回数据和长度
+失败返回nil和0
 
 

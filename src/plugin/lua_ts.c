@@ -30,7 +30,7 @@ static int _getInterval(lua_State *L)
 	ms = (lua_Number)((time.QuadPart - g_nLastTime.QuadPart)*100/g_nFreq.QuadPart);
 
 	luaL_checkstack(L, 1, "LUA Stack OverFlow");
-	lua_pushinteger(L, ms);
+	lua_pushinteger(L, (lua_Integer)ms);
 
 	return 1;
 }
@@ -44,7 +44,7 @@ static int _getTs(lua_State *L)
 	ts = (lua_Number)(time.QuadPart*1000/g_nFreq.QuadPart);
 
 	luaL_checkstack(L, 1, "LUA Stack OverFlow");
-	lua_pushinteger(L, ts);
+	lua_pushinteger(L, (lua_Integer)ts);
 
 	return 1;
 }

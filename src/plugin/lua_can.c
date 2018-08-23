@@ -7,10 +7,11 @@
 #include "lua_can.h"
 #include "PCANBasic.h"
 #include "PCAN-ISO-TP.h"
+#include "PCAN-UDS.h"
 
-#define LUA_CAN_N_SA       0x01
-#define LUA_CAN_N_TA       0x02
-#define LUA_CAN_N_TA_FUNC  0x03
+#define LUA_CAN_N_SA       ((BYTE) PUDS_ISO_15765_4_ADDR_TEST_EQUIPMENT)
+#define LUA_CAN_N_TA       ((BYTE) PUDS_ISO_15765_4_ADDR_ECU_1)
+#define LUA_CAN_N_TA_FUNC  ((BYTE) PUDS_ISO_15765_4_ADDR_OBD_FUNCTIONAL)
 
 static TPCANTPHandle g_channel;
 
@@ -25,6 +26,7 @@ static int _openCan(lua_State *L)
     uint32_t ECUID;
     uint32_t funcID;
     uint16_t baudcan;
+	uint8_t  tmp;
 	TPCANTPStatus status;
     
 	//检查栈空间
@@ -68,14 +70,22 @@ static int _openCan(lua_State *L)
 	status |= CANTP_AddMapping(g_channel, ECUID, testerID,
                 			PCANTP_ID_CAN_11BIT, PCANTP_FORMAT_NORMAL, PCANTP_MESSAGE_DIAGNOSTIC,
                 			LUA_CAN_N_TA, LUA_CAN_N_SA, PCANTP_ADDRESSING_PHYSICAL, 0x00);
-	/*status |= CANTP_AddMapping(g_channel, funcID, CAN_ID_NO_MAPPING,
+	status |= CANTP_AddMapping(g_channel, funcID, CAN_ID_NO_MAPPING,
                 			PCANTP_ID_CAN_11BIT, PCANTP_FORMAT_NORMAL, PCANTP_MESSAGE_DIAGNOSTIC,
-                			LUA_CAN_N_SA, LUA_CAN_N_TA_FUNC, PCANTP_ADDRESSING_FUNCTIONAL, 0x00);    */
+                			LUA_CAN_N_SA, LUA_CAN_N_TA_FUNC, PCANTP_ADDRESSING_FUNCTIONAL, 0x00); 
     if (PCANTP_ERROR_OK != status){
         luaL_error(L, "PCAN add mapping failed, status [%d] TesterID[%d] ECUID[%d], FUNCID[%d]\r\n", 
                    status, testerID, ECUID, funcID);
 		return 0;        
     }
+
+	/* hide PCANTP_MESSAGE_INDICATION from CANTP_Read*/
+	tmp = PCANTP_MSG_PENDING_HIDE;
+	status = CANTP_SetValue(g_channel, PCANTP_PARAM_MSG_PENDING, &tmp, sizeof(tmp));
+	if (PCANTP_ERROR_OK != status) {
+		luaL_error(L, "PCAN set configuration failed\r\n");
+		return 0;
+	}
 
     g_IDJustSend = 0;
 	lua_pushinteger (L, 0);
@@ -83,7 +93,6 @@ static int _openCan(lua_State *L)
 }
 
 static int _closeCan(lua_State *L)
-
 {
 	CANTP_Uninitialize(g_channel);
     return 0;
@@ -182,6 +191,7 @@ static int _sendIsotp(lua_State *L)
 	TPCANTPStatus status;
     TPCANTPMsg Message;
     const uint8_t *data;
+	const char *addr;
     int len;
     int cpylen;
 
@@ -189,17 +199,24 @@ static int _sendIsotp(lua_State *L)
 	luaL_checkstack(L, 1, "LUA Stack OverFlow");
 
     /* 获取参数 */
+	addr = lua_tolstring(L, -3, NULL);
     data = luaL_checkstring(L, -2);
     len = (int)luaL_checkinteger(L, -1);
 
     /* 填写报文 */
-    Message.SA = LUA_CAN_N_SA;
-    Message.TA = LUA_CAN_N_TA;
-    Message.TA_TYPE = PCANTP_ADDRESSING_PHYSICAL;
-    Message.RA = 0;
-    Message.IDTYPE = PCANTP_ID_CAN_11BIT;
-    Message.MSGTYPE = PCANTP_MESSAGE_DIAGNOSTIC;
-    Message.FORMAT = PCANTP_FORMAT_NORMAL;
+	Message.SA = LUA_CAN_N_SA;
+	Message.TA = LUA_CAN_N_TA;
+	Message.RA = 0;
+	Message.IDTYPE = PCANTP_ID_CAN_11BIT;
+	Message.MSGTYPE = PCANTP_MESSAGE_DIAGNOSTIC;
+	Message.FORMAT = PCANTP_FORMAT_NORMAL;
+	if (NULL != addr && 0 == strcmp(addr, "FUNC")){
+		Message.TA_TYPE = PCANTP_ADDRESSING_FUNCTIONAL;
+		Message.TA = LUA_CAN_N_TA_FUNC;
+	} else {
+		Message.TA_TYPE = PCANTP_ADDRESSING_PHYSICAL;
+		Message.TA = LUA_CAN_N_TA;
+	}
     
     cpylen = len;
     if (cpylen > PCANTP_MESSAGE_MAX_LENGTH){
@@ -240,7 +257,8 @@ static int _recvIsotp(lua_State *L)
     do{
         status = CANTP_Read(g_channel, &CANMsg, &CANTimeStamp);
         if (PCANTP_ERROR_OK == status && LUA_CAN_N_SA == CANMsg.SA &&
-			LUA_CAN_N_TA == CANMsg.TA && PCANTP_ADDRESSING_PHYSICAL == CANMsg.TA_TYPE){
+			((LUA_CAN_N_TA == CANMsg.TA && PCANTP_ADDRESSING_PHYSICAL == CANMsg.TA_TYPE) ||
+			 (LUA_CAN_N_TA_FUNC == CANMsg.TA && PCANTP_ADDRESSING_FUNCTIONAL == CANMsg.TA_TYPE))){
             status = PCANTP_ERROR_NO_MESSAGE;
         }
         if (GetTickCount() - ts > timeout) {

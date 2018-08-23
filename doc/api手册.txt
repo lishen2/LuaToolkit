@@ -135,10 +135,11 @@ can.sendRaw(id, data, len)
 
 can.recvRaw(timeout)
 接收原始CAN报文，超时时间单位为毫秒
-成功返回CAN消息和长度
-失败返回nil和0
+成功返回CAN ID、消息、长度
+失败返回0、nil、0
 
-can.sendIsotp(data, len)
+can.sendIsotp(addr_type, data, len)
+addr_type: "FUNC" 表示功能寻址，"PHY"表示物理寻址
 发送ISOTP报文，data长度不超过4095
 成功返回0，失败返回-1
 

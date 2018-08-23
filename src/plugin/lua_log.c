@@ -84,10 +84,7 @@ static void _printLog(const char *message)
 	tm = time(NULL);
 	timep = localtime(&tm);
 	snprintf(timebuf, sizeof(timebuf), 
-			 "[%04d-%02d-%02d %02d:%02d:%02d] ",
-				timep->tm_year + 1900,
-				timep->tm_mon + 1,
-				timep->tm_mday,
+			 "[%02d:%02d:%02d] ",
 				timep->tm_hour,
 				timep->tm_min,
 				timep->tm_sec);
@@ -124,6 +121,15 @@ static int _luaInit(lua_State *L)
 
 	g_file = fp;
 
+	return 0;
+}
+
+static int _luaClose(lua_State *L)
+{
+	if (NULL != g_file) {
+		fclose(g_file);
+		g_file = NULL;
+	}
 	return 0;
 }
 
@@ -187,6 +193,7 @@ static int _luaPrintHexLine(lua_State *L)
 
 static const struct luaL_Reg g_loglib [] = {
 	{"init", _luaInit},
+	{"close", _luaClose},
 	{"print", _luaPrint},
 	{"print_hex", _luaPrintHex},
 	{"print_hex_line", _luaPrintHexLine},

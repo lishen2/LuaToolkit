@@ -49,10 +49,26 @@ static int _getTs(lua_State *L)
 	return 1;
 }
 
-static const struct luaL_Reg g_tslib [] = {
+static int _delayMs(lua_State *L)
+{
+	unsigned int ms;
+
+	//保证栈上有一个空闲位置
+	luaL_checkstack(L, 1, "LUA Stack OverFlow");
+
+	//检查参数
+	ms = (unsigned int)luaL_checkinteger(L, -1);
+
+	Sleep(ms);
+
+	return 0;
+}
+
+static const struct luaL_Reg g_tslib[] = {
 	{"get_ts", _getTs},
 	{"reset_interval", _resetInterval},
 	{"get_interval", _getInterval},
+	{"delay", _delayMs},
 	{NULL, NULL}
 };
 
